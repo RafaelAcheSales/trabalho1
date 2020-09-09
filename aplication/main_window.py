@@ -5,7 +5,7 @@ from .viewport import Viewport
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__()
+        super(MainWindow, self).__init__()
         self.posx = 0
         self.posy = 0
         self.width = 800
@@ -112,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Canvas setup
         print(self)
         print(type(self))
-        self.viewport = Viewport(self)
+        self.viewport = Viewport()
         self.viewport.setGeometry(QtCore.QRect(200, 30, 600, 600))
 
         # Setting up menu bar
