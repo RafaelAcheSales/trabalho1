@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from templates.objects import Point3D, Line, Wireframe
+from templates.objects import Point, Line, Wireframe
 
 
 class Viewport(QtWidgets.QLabel):
@@ -20,7 +20,7 @@ class Viewport(QtWidgets.QLabel):
         # Varaible to hold objects to be drew
         self.objects = []
 
-    def draw_objects(self, objects):
+    def draw(self, objects):
         """
         Redraw view, checking if objects are inside the viewport
 
@@ -64,7 +64,7 @@ class Viewport(QtWidgets.QLabel):
 
         qp.end()
 
-    def point_inside_viewport(self, point: Point3D):
+    def point_inside_viewport(self, point: list):
         """
         Check if point is inside current viewport
 
@@ -76,7 +76,7 @@ class Viewport(QtWidgets.QLabel):
         --------
         True/False
         """
-        return point.x >= self.current_base_x and \
-            point.x <= self.current_base_x + self.current_width and \
-            point.y >= self.current_base_y and \
-            point.y <= self.current_base_y + self.current_height
+        return point[0] >= self.current_base_x and \
+            point[0] <= self.current_base_x + self.current_width and \
+            point[1] >= self.current_base_y and \
+            point[1] <= self.current_base_y + self.current_height

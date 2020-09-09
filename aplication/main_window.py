@@ -1,9 +1,9 @@
 import sys
 import random
 from PySide2 import QtWidgets, QtCore, QtGui
+from .viewport import Viewport
 
-
-class Janela(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.posx = 0
@@ -11,6 +11,7 @@ class Janela(QtWidgets.QMainWindow):
         self.width = 800
         self.height = 600
         self.title = "Sistema Gráfico"
+        self.setObjectName('MainWindow')
         self.CreateWindow()
 
     def CreateWindow(self):
@@ -22,19 +23,12 @@ class Janela(QtWidgets.QMainWindow):
         self.main_menu.setTitle("Tools")
         self.main_menu.setGeometry(QtCore.QRect(5, 20, 180, 600))
 
-
-        self.items_model = QtGui.QStandardItemModel()
-        self.object_list = QtWidgets.QListView(self.main_menu)
-        self.object_list.setGeometry(QtCore.QRect(10, 50, 150, 120))
-        self.object_list.setModel(self.items_model)
-
         self.window_menu_label = QtWidgets.QLabel(self.main_menu)
         self.window_menu_label.setGeometry(QtCore.QRect(10, 180, 110, 15))
         self.window_menu_label.setText("Window Menu")
 
-        self.in_btn = QtWidgets.QPushButton(self.main_menu)
-        self.in_btn.setGeometry(QtCore.QRect(100, 250, 30, 20))
-        self.in_btn.setText("In")
+        self.add_transform_buttons()
+        self.add_object_list()
 
         self.zoom_in = QtWidgets.QPushButton(self.main_menu)
         self.zoom_in.setGeometry(QtCore.QRect(70, 420, 30, 20))
@@ -56,9 +50,6 @@ class Janela(QtWidgets.QMainWindow):
         self.degrees_lbl.setGeometry(QtCore.QRect(10, 330, 55, 15))
         self.degrees_lbl.setText("Dregrees")
 
-        self.move_up = QtWidgets.QPushButton(self.main_menu)
-        self.move_up.setGeometry(QtCore.QRect(30, 227, 40, 25))
-        self.move_up.setText("Up")
 
         self.rotate_lbl = QtWidgets.QLabel(self.main_menu)
         self.rotate_lbl.setGeometry(QtCore.QRect(10, 300, 55, 15))
@@ -78,9 +69,6 @@ class Janela(QtWidgets.QMainWindow):
         self.degrees_unit_lbl.setGeometry(QtCore.QRect(120, 330, 15, 15))
         self.degrees_unit_lbl.setText("º")
 
-        self.move_right = QtWidgets.QPushButton(self.main_menu)
-        self.move_right.setGeometry(QtCore.QRect(52, 250, 40, 25))
-        self.move_right.setText("Right")
 
         self.step_input = QtWidgets.QLineEdit(self.main_menu)
         self.step_input.setText('1')
@@ -91,21 +79,8 @@ class Janela(QtWidgets.QMainWindow):
         self.zoom_lbl.setGeometry(QtCore.QRect(30, 400, 55, 15))
         self.zoom_lbl.setText("Zoom")
 
-        self.move_left = QtWidgets.QPushButton(self.main_menu)
-        self.move_left.setGeometry(QtCore.QRect(10, 250, 40, 25))
-        self.move_left.setText("Left")
+
         
-        self.move_down = QtWidgets.QPushButton(self.main_menu)
-        self.move_down.setGeometry(QtCore.QRect(30, 273, 40, 25))
-        self.move_down.setText("Down")
-
-        self.out_btn = QtWidgets.QPushButton(self.main_menu)
-        self.out_btn.setGeometry(QtCore.QRect(100, 270, 30, 25))
-        self.out_btn.setText("Out")
-
-        self.objects_lbl = QtWidgets.QLabel(self.main_menu)
-        self.objects_lbl.setGeometry(QtCore.QRect(10, 30, 55, 15))
-        self.objects_lbl.setText("Objects")
 
         self.projection_lbl = QtWidgets.QLabel(self.main_menu)
         self.projection_lbl.setGeometry(QtCore.QRect(10, 490, 80, 15))
@@ -135,8 +110,10 @@ class Janela(QtWidgets.QMainWindow):
         self.rotate_z_btn.setText("Z")
 
         # Canvas setup
-        #self.viewport = ViewPort(self)
-        #self.viewport.setGeometry(QtCore.QRect(200, 30, 600, 600))
+        print(self)
+        print(type(self))
+        self.viewport = Viewport(self)
+        self.viewport.setGeometry(QtCore.QRect(200, 30, 600, 600))
 
         # Setting up menu bar
         self.menubar = QtWidgets.QMenuBar(self)
@@ -153,3 +130,33 @@ class Janela(QtWidgets.QMainWindow):
         self.menuFile.addAction(self.add_new_object)
 
         self.show()
+
+    def add_transform_buttons(self):
+        self.move_up = QtWidgets.QPushButton(self.main_menu)
+        self.move_up.setGeometry(QtCore.QRect(30, 227, 40, 25))
+        self.move_up.setText("Up")
+
+        self.move_right = QtWidgets.QPushButton(self.main_menu)
+        self.move_right.setGeometry(QtCore.QRect(52, 250, 40, 25))
+        self.move_right.setText("Right")
+
+        self.move_left = QtWidgets.QPushButton(self.main_menu)
+        self.move_left.setGeometry(QtCore.QRect(10, 250, 40, 25))
+        self.move_left.setText("Left")
+        
+        self.move_down = QtWidgets.QPushButton(self.main_menu)
+        self.move_down.setGeometry(QtCore.QRect(30, 273, 40, 25))
+        self.move_down.setText("Down")
+
+    def add_object_list(self):
+
+        #object list
+        self.items_model = QtGui.QStandardItemModel()
+        self.object_list = QtWidgets.QListView(self.main_menu)
+        self.object_list.setGeometry(QtCore.QRect(10, 50, 150, 120))
+        self.object_list.setModel(self.items_model)
+
+        #object label
+        self.objects_lbl = QtWidgets.QLabel(self.main_menu)
+        self.objects_lbl.setGeometry(QtCore.QRect(10, 30, 55, 15))
+        self.objects_lbl.setText("Objects")
