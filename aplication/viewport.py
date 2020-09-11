@@ -34,8 +34,9 @@ class Viewport(QtWidgets.QLabel):
         qp.setPen(pen)
         print(self.objects)
         for obj in self.objects:
+            print(obj)
             # In case it is a point
-            if len(obj) == 2:
+            if type(obj) == tuple:
                 x, y = obj
                 qp.drawPoint(x, y)
 

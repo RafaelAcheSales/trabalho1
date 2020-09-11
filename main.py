@@ -72,7 +72,16 @@ class AppController:
         self.update_viewport()
 
     def add_wireframe(self, tab, name):
-        print("sim")
+        points = []
+        for i, point in enumerate(tab.points_list):
+            x, y, z = point
+            point = (x,  y)
+            points.append(point)
+        print(points)
+        created_wireframe = Factory.create_wireframe(name, points)
+        self.object_list.append(created_wireframe)
+        self.update_viewport()
+        
 
     def update_viewport(self):
         transformed_objects = []
@@ -84,8 +93,10 @@ class AppController:
                 transformed_objects.append(self.transform_point(coords[0]))
             else:
                 print("wireframe")
+                new_obj = []
                 for p in coords:
-                    transformed_objects.append(self.transform_point(p))
+                    new_obj.append(self.transform_point(p))
+                transformed_objects.append(new_obj)
         self.main_window.viewport.draw(transformed_objects)
     def on_new_object(self):
         tab_name, tab_instance = self.add_object_dialog.active_tab()
