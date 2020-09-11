@@ -12,8 +12,8 @@ class AppController:
         # Initial window settings
         self.window_xmin = 0
         self.window_ymin = 0
-        self.window_xmax = 900
-        self.window_ymax = 600
+        self.window_xmax = 512
+        self.window_ymax = 512
 
         # Viewport values
         self.xvp_min = 0
@@ -35,7 +35,7 @@ class AppController:
         timer = QTimer()
         timer.timeout.connect(lambda: None)
         timer.start(100)
-
+        
         sys.exit(self.app.exec_())
 
     def create_obj_dialog(self):
@@ -44,16 +44,18 @@ class AppController:
         self.add_object_dialog.setVisible(False)
         self.add_object_dialog.buttonBox.accepted.connect(self.on_new_object)
 
-    def add_point(self, tab):
+    def add_point(self, tab, name):
         point = []
         coords_tuple = (int(tab.x_coord_pt_input.text()), int(tab.y_coord_pt_input.text()), int(tab.z_coord_pt_input.text()))
         point.append(coords_tuple)
-        print(point)
-        created_point = Factory.create_point("rafa", point)
+        print("point added")
+        created_point = Factory.create_point(tab, point)
         self.object_list.append(created_point)
-        print(created_point)
+        self.update_viewport()
 
-    def add_line(self, tab):
+    def add_line(self, tab, name):
+        coords = []
+        print("LINE ADDED")
         p1 = (int(tab.start_x_coord_line_input.text()),
             int(tab.start_y_coord_line_input.text()),
             int(tab.start_z_coord_line_input.text())
@@ -63,16 +65,32 @@ class AppController:
             int(tab.end_y_coord_line_input.text()),
             int(tab.end_z_coord_line_input.text())
         )
-        print(p1 + p2)
+        coords.append(p1)
+        coords.append(p2)
+        created_line = Factory.create_line(name, coords)
+        self.object_list.append(created_line)
+        self.update_viewport()
 
-    def add_wireframe(self, tab):
+    def add_wireframe(self, tab, name):
         print("sim")
 
     def update_viewport(self):
+        transformed_objects = []
+        print(self.object_list)
+        for obj in self.object_list:
+            coords = obj.coords
+            if len(coords) == 1 :
+                print("Ponto")
+                transformed_objects.append(self.transform_point(coords[0]))
+            else:
+                print("wireframe")
+                for p in coords:
+                    transformed_objects.append(self.transform_point(p))
         self.main_window.viewport.draw(transformed_objects)
     def on_new_object(self):
         tab_name, tab_instance = self.add_object_dialog.active_tab()
-        self.objects_callbacks[tab_name](tab_instance)
+        obj_name = self.add_object_dialog.name_input.text().strip()
+        self.objects_callbacks[tab_name](tab_instance, obj_name)
 
     def dialog_handler(self):
         self.add_object_dialog.setVisible(True)
@@ -100,6 +118,7 @@ class AppController:
         print(direction)
 
     def transform_point(self, p: list):
+        print(p)
         xw = p[0]
         yw = p[1]
 

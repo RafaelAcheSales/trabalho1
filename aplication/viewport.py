@@ -22,22 +22,6 @@ class Viewport(QtWidgets.QLabel):
         self.objects = []
 
     def draw(self, objects):
-        """
-        Redraw view, checking if objects are inside the viewport
-
-        Parameters
-        ----------
-        objects: list
-            List of objects to be draw
-        """
-        for obj in objects:
-            if not isinstance(obj, list):
-                raise ValueError('Invalid object to be drawn')
-
-            for point in obj:
-                if len(point) != 2:
-                    raise ValueError('Invalid object to be drawn')
-
         self.objects = objects
         self.update()
 
@@ -48,10 +32,11 @@ class Viewport(QtWidgets.QLabel):
         pen.setWidth(3)
         pen.setColor(QtGui.QColor(0, 0, 0))
         qp.setPen(pen)
+        print(self.objects)
         for obj in self.objects:
             # In case it is a point
-            if len(obj) == 1:
-                x, y = obj[0]
+            if len(obj) == 2:
+                x, y = obj
                 qp.drawPoint(x, y)
 
             else:
@@ -60,6 +45,7 @@ class Viewport(QtWidgets.QLabel):
                 for p in obj[1:]:
                     xs, ys = prev_p
                     xe, ye = p
+                    print(xs, ys, xe, ye)
                     qp.drawLine(xs, ys, xe, ye)
                     prev_p = p
 

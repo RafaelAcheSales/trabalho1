@@ -115,7 +115,7 @@ class MainWindow(QtWidgets.QMainWindow):
         print(type(self))
         print("debug ## #")
         self.viewport = Viewport(self)
-        self.viewport.setGeometry(QtCore.QRect(200, 30, 600, 600))
+        self.viewport.setGeometry(QtCore.QRect(200, 30, 512, 512))
 
         # Setting up menu bar
         self.menubar = QtWidgets.QMenuBar(self)
