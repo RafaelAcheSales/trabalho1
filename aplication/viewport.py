@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PySide2 import QtWidgets, QtCore, QtGui
 from templates.objects import Point, Line, Wireframe
 
 
@@ -18,7 +18,7 @@ class Viewport(QtWidgets.QLabel):
         '''
         self.setStyleSheet(stylesheet)
 
-        # Varaible to hold objects to be drew
+        # Variable to hold objects to be drew
         self.objects = []
 
     def draw(self, objects):

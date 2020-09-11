@@ -1,4 +1,5 @@
 import sys
+from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication
 from aplication.main_window import MainWindow
 from aplication.new_object import NewObjectDialog
@@ -11,27 +12,31 @@ class AppController:
         # Initial window settings
         self.window_xmin = 0
         self.window_ymin = 0
-        self.window_xmax = 600
+        self.window_xmax = 900
         self.window_ymax = 600
 
         # Viewport values
         self.xvp_min = 0
         self.yvp_min = 0
-        self.xvp_max = 600
-        self.yvp_max = 600
+        self.xvp_max = 512
+        self.yvp_max = 512
 
-        app = QApplication(sys.argv)
+        self.app = QApplication(sys.argv)
+        self.main_window = MainWindow()
         self.objects_callbacks = {"Point": self.add_point, "Line": self.add_line, "Wireframe": self.add_wireframe}
         self.object_list = []
-        self.window = MainWindow()
         self.create_obj_dialog()
-        self.window.add_new_object.triggered.connect(
+        self.main_window.add_new_object.triggered.connect(
             self.dialog_handler)
 
         self.add_btn_handlers()
-        
+        self.main_window.show()
 
-        sys.exit(app.exec_())
+        timer = QTimer()
+        timer.timeout.connect(lambda: None)
+        timer.start(100)
+
+        sys.exit(self.app.exec_())
 
     def create_obj_dialog(self):
         self.add_object_dialog = NewObjectDialog()
@@ -64,7 +69,7 @@ class AppController:
         print("sim")
 
     def update_viewport(self):
-        self.window.viewport.draw(transformed_objects)
+        self.main_window.viewport.draw(transformed_objects)
     def on_new_object(self):
         tab_name, tab_instance = self.add_object_dialog.active_tab()
         self.objects_callbacks[tab_name](tab_instance)
@@ -73,17 +78,17 @@ class AppController:
         self.add_object_dialog.setVisible(True)
         
     def add_btn_handlers(self):
-        self.window.zoom_in.clicked.connect(lambda: self.zoom_action(True))
+        self.main_window.zoom_in.clicked.connect(lambda: self.zoom_action(True))
 
-        self.window.zoom_out.clicked.connect(lambda: self.zoom_action(False))
+        self.main_window.zoom_out.clicked.connect(lambda: self.zoom_action(False))
 
-        self.window.move_up.clicked.connect(lambda: self.move_view("up"))
+        self.main_window.move_up.clicked.connect(lambda: self.move_view("up"))
 
-        self.window.move_down.clicked.connect(lambda: self.move_view("down"))
+        self.main_window.move_down.clicked.connect(lambda: self.move_view("down"))
 
-        self.window.move_left.clicked.connect(lambda: self.move_view("left"))
+        self.main_window.move_left.clicked.connect(lambda: self.move_view("left"))
 
-        self.window.move_right.clicked.connect(lambda: self.move_view("right"))
+        self.main_window.move_right.clicked.connect(lambda: self.move_view("right"))
 
 
     def move_view(self, direction):
@@ -113,7 +118,7 @@ class AppController:
             (yvpmax - yvpmin) - self.yvp_min
 
         return (xvp, yvp)
-        
+
 
 
 if __name__ == "__main__":

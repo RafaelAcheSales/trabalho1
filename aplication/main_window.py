@@ -110,9 +110,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotate_z_btn.setText("Z")
 
         # Canvas setup
+        print( "debug:: :")
         print(self)
         print(type(self))
-        self.viewport = Viewport()
+        print("debug ## #")
+        self.viewport = Viewport(self)
         self.viewport.setGeometry(QtCore.QRect(200, 30, 600, 600))
 
         # Setting up menu bar
