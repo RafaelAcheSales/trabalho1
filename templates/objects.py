@@ -21,14 +21,13 @@ class Object:
 
 
 class Point(Object):
-    def __init__(self, name : str , point : list):
+    def __init__(self, name: str, point: list):
         super().__init__(name, point)
 
 class Line(Object):
-    def __init__(self, name : str, points: list):
+    def __init__(self, name: str, points: list):
         super().__init__(name, points)
 
 class Wireframe(Object):
-    def __init__(self, name : str , points : list):
+    def __init__(self, name: str, points: list):
         super().__init__(name, points)
-        

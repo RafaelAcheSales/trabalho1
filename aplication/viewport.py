@@ -5,8 +5,6 @@ from templates.objects import Point, Line, Wireframe
 class Viewport(QtWidgets.QLabel):
 
     def __init__(self, parent):
-        print(parent)
-        print(type(parent))
         super(Viewport, self).__init__(parent)
 
         # Object style sheet
