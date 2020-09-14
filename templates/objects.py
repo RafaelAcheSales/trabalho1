@@ -1,11 +1,15 @@
 class Object:
     def __init__(self, name : str, coord: list):
-        self._name = name
+        self.name = name
         self._coords = coord
 
-    property
+    @property
     def name(self):
         return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
 
     @property
     def coords(self):

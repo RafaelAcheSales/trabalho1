@@ -4,6 +4,7 @@ from PySide2.QtWidgets import QApplication
 from aplication.main_window import MainWindow
 from aplication.new_object import NewObjectDialog
 from templates.factory import Factory
+from aplication.list_object import ListObject
 
 Factory = Factory()
 class AppController:
@@ -35,7 +36,8 @@ class AppController:
         timer = QTimer()
         timer.timeout.connect(lambda: None)
         timer.start(100)
-        
+        self.object_list.append(Factory.create_line("rafa", [(0, 20, 200), (300, 90, 0)]))
+        self.update_viewport()
         sys.exit(self.app.exec_())
 
     def create_obj_dialog(self):
@@ -44,14 +46,23 @@ class AppController:
         self.add_object_dialog.setVisible(False)
         self.add_object_dialog.buttonBox.accepted.connect(self.on_new_object)
 
+    def on_new_object(self):
+        tab_name, tab_instance = self.add_object_dialog.active_tab()
+        obj_name = self.add_object_dialog.name_input.text().strip()
+        object = self.objects_callbacks[tab_name](tab_instance, obj_name)
+        item = ListObject(object)
+        self.main_window.items_model.appendRow(item)
+        self.update_viewport()
+
     def add_point(self, tab, name):
         point = []
         coords_tuple = (int(tab.x_coord_pt_input.text()), int(tab.y_coord_pt_input.text()), int(tab.z_coord_pt_input.text()))
         point.append(coords_tuple)
         print("point added")
-        created_point = Factory.create_point(tab, point)
+        created_point = Factory.create_point(name, point)
         self.object_list.append(created_point)
-        self.update_viewport()
+        print(created_point)
+        return created_point
 
     def add_line(self, tab, name):
         coords = []
@@ -69,7 +80,7 @@ class AppController:
         coords.append(p2)
         created_line = Factory.create_line(name, coords)
         self.object_list.append(created_line)
-        self.update_viewport()
+        return created_line
 
     def add_wireframe(self, tab, name):
         points = []
@@ -80,12 +91,11 @@ class AppController:
         print(points)
         created_wireframe = Factory.create_wireframe(name, points)
         self.object_list.append(created_wireframe)
-        self.update_viewport()
+        return created_wireframe
         
 
     def update_viewport(self):
         transformed_objects = []
-        print(self.object_list)
         for obj in self.object_list:
             coords = obj.coords
             if len(coords) == 1 :
@@ -98,10 +108,7 @@ class AppController:
                     new_obj.append(self.transform_point(p))
                 transformed_objects.append(new_obj)
         self.main_window.viewport.draw(transformed_objects)
-    def on_new_object(self):
-        tab_name, tab_instance = self.add_object_dialog.active_tab()
-        obj_name = self.add_object_dialog.name_input.text().strip()
-        self.objects_callbacks[tab_name](tab_instance, obj_name)
+
 
     def dialog_handler(self):
         self.add_object_dialog.setVisible(True)
@@ -111,22 +118,52 @@ class AppController:
 
         self.main_window.zoom_out.clicked.connect(lambda: self.zoom_action(False))
 
-        self.main_window.move_up.clicked.connect(lambda: self.move_view("up"))
+        self.main_window.move_up.clicked.connect(lambda: self.move_view("down"))
 
-        self.main_window.move_down.clicked.connect(lambda: self.move_view("down"))
+        self.main_window.move_down.clicked.connect(lambda: self.move_view("up"))
 
-        self.main_window.move_left.clicked.connect(lambda: self.move_view("left"))
+        self.main_window.move_left.clicked.connect(lambda: self.move_view("right"))
 
-        self.main_window.move_right.clicked.connect(lambda: self.move_view("right"))
+        self.main_window.move_right.clicked.connect(lambda: self.move_view("left"))
 
 
     def move_view(self, direction):
-        print("move_view")
-        print(direction)
+        step = int(self.main_window.step_input.text())
+        window_size_x = self.window_xmax - self.window_xmin
+        window_size_y = self.window_ymax - self.window_ymin
+        offsetx = window_size_x * step/100
+        offsety = window_size_y * step/100
+
+        if direction == 'up':
+            self.yvp_max += offsety
+            self.yvp_min += offsety
+
+        elif direction == 'down':
+            self.yvp_max -= offsety
+            self.yvp_min -= offsety
+
+        elif direction == 'right':
+            self.xvp_max -= offsetx
+            self.xvp_min -= offsetx
+
+        elif direction == 'left':
+            self.xvp_max += offsetx
+            self.xvp_min += offsetx
+
+        self.update_viewport()
 
     def zoom_action(self, direction):
-        print("zoom")
-        print(direction)
+        step = int(self.main_window.step_input.text())
+        if direction:
+            self.window_xmax *= (1 - step/100)
+            self.window_ymax *= (1 - step/100)
+
+        else:
+            self.window_xmax *= (1 + step/100)
+            self.window_ymax *= (1 + step/100)
+
+        # Update objects on viewport
+        self.update_viewport()
 
     def transform_point(self, p: list):
         print(p)
