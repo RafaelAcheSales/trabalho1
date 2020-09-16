@@ -4,10 +4,11 @@ from PySide2.QtWidgets import QApplication
 from aplication.main_window import MainWindow
 from aplication.new_object import NewObjectDialog
 from templates.factory import Factory
+from templates.obj_transformator import ObjTransformator
 from aplication.list_object import ListObject
 
 Factory = Factory()
-
+ObjTransformator = ObjTransformator()
 
 class AppController:
 
@@ -29,6 +30,7 @@ class AppController:
         self.objects_callbacks = {"Point": self.add_point, "Line": self.add_line, "Wireframe": self.add_wireframe}
         self.object_list = []
         self.create_obj_dialog()
+        self.main_window.transform_dialog.buttonBox.accepted.connect(self.on_obj_transform)
         self.main_window.add_new_object.triggered.connect(
             self.dialog_handler)
 
@@ -38,12 +40,12 @@ class AppController:
         timer = QTimer()
         timer.timeout.connect(lambda: None)
         timer.start(100)
-<<<<<<< HEAD
-        self.object_list.append(Factory.create_line("rafa", [(0, 20, 200), (300, 90, 0)]))
-        self.update_viewport()
-=======
+        obj = Factory.create_wireframe("rafa", [(0, 20, 0), (300, 90, 0), (400, 400, 0), (0, 20, 0)])
+        self.object_list.append(obj)
+        item = ListObject(obj)
+        self.main_window.items_model.appendRow(item)
 
->>>>>>> 2865e60dcf621b9031df6ffa94afe6fb0864efdb
+        self.update_viewport()
         sys.exit(self.app.exec_())
 
     def create_obj_dialog(self):
@@ -51,6 +53,32 @@ class AppController:
         self.add_object_dialog.show()
         self.add_object_dialog.setVisible(False)
         self.add_object_dialog.buttonBox.accepted.connect(self.on_new_object)
+
+    def on_obj_transform(self):
+        tab_name, tab_instance, obj = self.main_window.transform_dialog.active_tab()
+        new_coords = []
+        if tab_name == "Translate":
+            dx = int(tab_instance.x.text())
+            dy = int(tab_instance.y.text())
+            print(dx, dy)
+            new_coords = ObjTransformator.translate(obj.coords, dx, dy)
+        elif tab_name == "Rotate":
+            angle = float(tab_instance.angle_input.text())
+            mode = str(tab_instance.combo.currentText())
+            if mode == "POINT":
+                x = int(tab_instance.x.text())
+                y = int(tab_instance.y.text())
+                new_coords = ObjTransformator.rotate(obj.coords, angle, mode, (x, y))
+            else:
+                new_coords = ObjTransformator.rotate(obj.coords, angle, mode)
+        elif tab_name == "Scale":
+            sx = int(tab_instance.sx.text())
+            sy = int(tab_instance.sy.text())
+            print("Scale")
+            new_coords = ObjTransformator.scale(obj.coords, sx, sy)
+        obj.coords = new_coords
+        self.update_viewport()
+        
 
     def on_new_object(self):
         tab_name, tab_instance = self.add_object_dialog.active_tab()
@@ -89,44 +117,31 @@ class AppController:
         self.object_list.append(created_line)
         return created_line
 
+
     def add_wireframe(self, tab, name):
         points = []
         for i, point in enumerate(tab.points_list):
             x, y, z = point
             point = (x, y)
             points.append(point)
-        print(points)
         created_wireframe = Factory.create_wireframe(name, points)
         self.object_list.append(created_wireframe)
-<<<<<<< HEAD
         return created_wireframe
         
-=======
-        self.update_viewport()
->>>>>>> 2865e60dcf621b9031df6ffa94afe6fb0864efdb
 
     def update_viewport(self):
         transformed_objects = []
         for obj in self.object_list:
             coords = obj.coords
             if len(coords) == 1:
-                print("Ponto")
                 transformed_objects.append(self.transform_point(coords[0]))
             else:
-                print("wireframe")
                 new_obj = []
                 for p in coords:
                     new_obj.append(self.transform_point(p))
                 transformed_objects.append(new_obj)
         self.main_window.viewport.draw(transformed_objects)
 
-<<<<<<< HEAD
-=======
-    def on_new_object(self):
-        tab_name, tab_instance = self.add_object_dialog.active_tab()
-        obj_name = self.add_object_dialog.name_input.text().strip()
-        self.objects_callbacks[tab_name](tab_instance, obj_name)
->>>>>>> 2865e60dcf621b9031df6ffa94afe6fb0864efdb
 
     def dialog_handler(self):
         self.add_object_dialog.setVisible(True)
@@ -183,7 +198,6 @@ class AppController:
         self.update_viewport()
 
     def transform_point(self, p: list):
-        print(p)
         xw = p[0]
         yw = p[1]
 
@@ -202,7 +216,9 @@ class AppController:
               (yvpmax - yvpmin) - self.yvp_min
 
         return xvp, yvp
+    
+    
 
-
+    
 if __name__ == "__main__":
     AppController()

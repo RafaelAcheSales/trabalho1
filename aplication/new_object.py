@@ -139,10 +139,6 @@ class LineTab(QtWidgets.QWidget):
         self.y_lbl_3.setText('Y')
 
     def reset_values(self):
-        """
-        Reset inputs to empty value
-        """
-
         self.start_x_coord_line_input.setText('')
         self.start_y_coord_line_input.setText('')
         self.start_z_coord_line_input.setText('')
@@ -153,10 +149,6 @@ class LineTab(QtWidgets.QWidget):
 
 
 class PointTab(QtWidgets.QWidget):
-    """
-    Tab for holding buttons and inputs for creating a point
-    """
-
     def __init__(self):
         super().__init__()
 
@@ -191,20 +183,12 @@ class PointTab(QtWidgets.QWidget):
         self.y_lbl_pt.setText("Y")
 
     def reset_values(self):
-        """
-        Reset inputs to empty value
-        """
-        # Reset inputs for point
         self.x_coord_pt_input.setText('')
         self.y_coord_pt_input.setText('')
         self.z_coord_pt_input.setText('')
 
 
 class WireframeTab(QtWidgets.QWidget):
-    """
-    Tab for holding buttons and inputs for creating a point
-    """
-
     def __init__(self):
         super().__init__()
         # TODO

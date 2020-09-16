@@ -1,11 +1,11 @@
 from PySide2 import QtWidgets, QtCore, QtGui
-
 from .viewport import Viewport
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+        from .transform_dialog import TransformDialog
         self.items_model = QtGui.QStandardItemModel()
         self.main_menu = QtWidgets.QGroupBox(self)
         self.window_menu_label = QtWidgets.QLabel(self.main_menu)
@@ -29,6 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotate_z_btn = QtWidgets.QPushButton(self.main_menu)
         self.parallel_radio_btn = QtWidgets.QRadioButton(self.main_menu)
         self.perspective_radio_btn = QtWidgets.QRadioButton(self.main_menu)
+        self.transform_dialog = TransformDialog()
         self.viewport = Viewport(self)
         self.posx = 0
         self.posy = 0
@@ -122,6 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_object_list(self):
         # object list
         self.object_list = QtWidgets.QListView(self.main_menu)
+        self.object_list.doubleClicked.connect(self.on_obj_clicked)
         self.object_list.setGeometry(QtCore.QRect(10, 50, 150, 120))
         self.object_list.setModel(self.items_model)
 
@@ -129,3 +131,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.objects_lbl = QtWidgets.QLabel(self.main_menu)
         self.objects_lbl.setGeometry(QtCore.QRect(10, 30, 55, 15))
         self.objects_lbl.setText("Objects")
+
+    def on_obj_clicked(self, index):
+        print("clicked")
+        item = self.items_model.itemFromIndex(index)
+        self.transform_dialog.new_dialog(item.object)
